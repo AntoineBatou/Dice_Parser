@@ -11,6 +11,7 @@ parser.add_argument("base",type=str, help="Nombre de dés et de face. // Ex : 3d
 parser.add_argument(
     "-r",
     "--repeat",
+    metavar="number",
     help="Nombre de fois où les dés sont lancés !",
     type=int,
     default=1
@@ -18,6 +19,7 @@ parser.add_argument(
 parser.add_argument(
     "-l",
     "--log",
+    metavar="path",
     help="Adresse ou on veut enregistrer les logs",
     type=str,
     default=home / 'log'
@@ -32,9 +34,15 @@ path = home / f"{args.log}.txt"
 
 total = []
 
-separation = config.split("d")
-nb_des = int(separation[0])
-nb_face = int(separation[1])
+print(args)
+
+def parse_roll(config=config):
+    try:
+        nb_des, nb_face = [int(i) for i in config.split("d")]
+    except ValueError:
+        raise ValueError("Mauvaise configuration !")
+    return nb_des, nb_face
+
 
 def launch(nb_des, faces):
     for _ in range(nb_des * repeat):
@@ -51,6 +59,7 @@ def save(log):
     with open (log, "a") as f:
         f.write(f"{total}\n")
 
+nb_des, nb_face = parse_roll()
 launch(nb_des, nb_face)
 print_resultat(total)
 save(path)
